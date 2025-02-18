@@ -1,23 +1,38 @@
+
+# Ejemplo 1 ---------------------------------------------------------------
+
 # Cargar datos
+# En caso de qué no tenga instaladas las librerías, es necesario instalar primero. Para esto. 
+# 1) Elimine el numeral desde la linea 7 - 10
+#install.packages("readr")
+#install.packages("dplyr")
+#install.packages("ggplot2")
+#install.packages("dplyr")
+
 #### ¿Existe correlación? ####
 # Ejemplo del libro A Modern Approach to Regression with R, los derechos de autor son reconocidos a Simon Sheather
 library(readr)
 Datos <- read_csv("GitHub/estadistica-inferencia/Modelos_Lineales/Modelos_Lineales/FieldGoals2003to2006.csv")
 attach(Datos)
-library(corrplot)
 library(dplyr)
 Datos1 <-  Datos[,c(5,7)]
+# Renombrar nombres de columnas 
+Datos1 <- Datos1 %>% rename( 
+  Porcentaje_Goles_Campo = FGt, 
+  Porcentaje_Gol_Campo_Año_Anterior = FGAtM1)
 (M= cor(Datos1, method="pearson")) # -0.05300749
- 
+
 #Grafico de la correlación
+
 plot(Datos$FGtM1,Datos$FGt, 
-     main="Gráfico de correlación = -0.504",
-     xlab="Field Goal Percentage in Year t-1",
-     ylab="Field Goal Percentage in Year t")
+     main="Gráfico de correlación = -0.05300749",
+     xlab="Porcentaje_Gol_Campo_Año_Anterior",
+     ylab="Porcentaje_Goles_Campo")
 #¿ existe una correlación?
 
 # Modelo de regresión sin considerar pateadores
-modelo.sin.pateadores <-  lm(FGt ~ FGAtM1) 
+modelo.sin.pateadores <-  lm(Porcentaje_Goles_Campo ~ Porcentaje_Gol_Campo_Año_Anterior, 
+                             data= Datos1) 
 anova(modelo.sin.pateadores)
 summary(modelo.sin.pateadores)
 
@@ -28,28 +43,26 @@ summary(modelo.con.pateadores)
 # Solo con nombres de pateadores
 fit.2 <- lm(FGt ~ Name + FGtM1,data=Datos)
 fit.2
-# Grafica real 
-plot(Datos$FGtM1,Datos$FGt,
-     main="Correlación total = -0.504",
-     xlab="Field Goal Percentage in Year t-1",
-     ylab="Field Goal Percentage in Year t")
-tt <- seq(60,100,length=1001)
-slope.piece <- summary(fit.2)$coef[20]*tt
+# Añadimos las líneas para cada pateador.  
+
+tt <- seq(60,100,length=1001) # crea puntos
+slope.piece <- summary(fit.2)$coef[20]*tt # Toma el coeficiente intercept de FGTM1, Slope of each line = -0.504
 lines(tt,summary(fit.2)$coef[1]+slope.piece,lty=2)
 for (i in 2:19)
 {lines(tt,summary(fit.2)$coef[1]+summary(fit.2)$coef[i]+slope.piece,lty=2)}
+
 # Hay dos aspectos destacables en las líneas de regresión, 
 # la pendiente común de cada línea es negativa. 
 # Esto significa que si un lanzador tuvo un alto porcentaje de goles de campo en el año anterior, 
 # entonces se predice que tendrá un menor porcentaje de goles de campo en el año en curso. 
 # En segundo lugar, la diferencia en las alturas de las líneas (es decir, en las intercepciones) llega al 20%, 
 # lo que indica una gran variedad en el rendimiento de los 19 pateadores.
+# Sin emabargo, estos puntos no colocan la etiqueta de los pateadores ya que solo toman 
+# a la variable de predcción del próximo año para realizar las líneas.
+# Slope of each line = -0.504
 
-# Otra forma de ver (Se utiliza chatGPT)
+# Carga los paquetes necesarios si aún no están instalados
 
-# Instala y carga los paquetes necesarios si aún no están instalados
-# install.packages("ggplot2")
-# install.packages("dplyr")
 library(ggplot2)
 library(dplyr)
 
@@ -68,8 +81,8 @@ ggplot(Datos, aes(x = FGAtM1, y = FGt, color = Name)) +
   geom_abline(data = coeficientes, aes(intercept = intercepto, slope = pendiente), 
               linetype = "dashed", size = 1) +
   labs(title = "Regresión lineal sin categoría Nombres",
-       x = "Field Goal Percentage in Year t-1",
-       y = "Field Goal Percentage in Year t") +
+       x = "Porcentaje Gol Campo (Año Anterior)",
+       y = "Porcentaje Gol Campo (Año Actual)") +
   theme_minimal()
 
 # Crear un gráfico de dispersión con líneas de regresión separadas por categoría
@@ -77,9 +90,12 @@ ggplot(Datos, aes(x = FGAtM1, y = FGt, color = Name)) +
   geom_point() +
   geom_smooth(method = "lm", se = F) +  # Se utiliza geom_smooth con método de regresión lineal
   labs(title = "Regresión lineal por categoría Nombres",
-       x = "Field Goal Percentage in Year t-1",
-       y = "Field Goal Percentage in Year t") +
+       x = "Porcentaje Gol Campo (Año Anterior)",
+       y = "Porcentaje Gol Campo (Año Actual)") +
   theme_minimal()
+
+
+# Ejemplo 2 ---------------------------------------------------------------
 
 
 #### Mi primer modelo de regresión ####
