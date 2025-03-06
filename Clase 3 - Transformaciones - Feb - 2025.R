@@ -14,6 +14,7 @@
 #install.packages("nortest")
 #install.packages("MASS") 
 #install.packages("gridExtra")
+
 # Ingreso de datos
 
 altitud <- c(0, 0, 5, 5, 5, 10, 10, 10, 10, 15, 15, 25, 50, 50, 80, 80, 80, 
