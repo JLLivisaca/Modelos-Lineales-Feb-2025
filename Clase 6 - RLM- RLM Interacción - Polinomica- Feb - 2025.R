@@ -24,6 +24,7 @@ summary(mfull.interaccion)
 # Grafico
 vinos$Lluvia <- factor(vinos$Lluvia)
 # Crear el gráfico de dispersión con ggplot y añadir líneas de regresión
+library(ggplot2)
 ggplot(vinos, aes(x = Fin_cosecha, y = Calidad, color = Lluvia, shape = Lluvia)) +
   geom_point(size = 3) +  # Puntos de dispersión
   scale_shape_manual(values = c(16, 17)) +  # Define los símbolos
@@ -35,6 +36,7 @@ ggplot(vinos, aes(x = Fin_cosecha, y = Calidad, color = Lluvia, shape = Lluvia))
   geom_smooth(data = vinos[vinos$Lluvia == 0,], aes(group = 1), method = "lm", formula = y ~ x, se = FALSE, linetype = "solid", color = "blue", size = 1) +  # Línea de regresión para modelo2
   geom_text(aes(label = Lluvia), hjust = 1, vjust = -1) +  # Etiqueta de datos para identificar el color del punto
   geom_text(aes(x = 15, y = 5, label = "Línea de Regresión"), color = "black", size = 3)  # Etiqueta de datos para identificar el color de la línea de regresión
+
 
 # ¿existirán outliers en el modelo?
 
@@ -100,6 +102,7 @@ resis <- c(6.3, 11.1, 20, 24, 26.1, 30, 33.8, 34, 38.1, 39.9, 42, 46.1, 53.1,
            52, 52.5, 48, 42.8, 27.8, 21.9)
 datos <- data.frame(Concentración=conc,Resistencia=resis)
 #Grafica
+library(ggplot2)
 ggplot(datos, aes(x=Concentración, y=Resistencia)) + 
   geom_point() + theme_light()
 
